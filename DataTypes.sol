@@ -18,7 +18,7 @@ contract DataTypes {
     bool public success = true;
     bool public myBool;
 
-    struct person {
+    struct Person {
         string firstName;
         bytes8 lastName;
         bool married;
