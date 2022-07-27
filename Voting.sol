@@ -2,32 +2,27 @@
 pragma solidity ^0.8.15;
 
 contract Voting {
-    // State variables:
-    struct Voter{
+    address public admin;
+    Candidate[2] public candidates;
+    mapping(address => Voter) public voters;
+    bool public isActive;
+
+    struct Voter {
         bool voted;
         bool canVote;
     }
 
-    mapping(address => Voter) public voters;
-
-    struct Candidate{
+    struct Candidate {
         string name;
         uint voteCount;
     }
 
-    Candidate[2] public candidates;
-    bool public isActive;
-    address public admin;
-
-    // Modifiers:
-    modifier onlyAdmin(){
-        // Only the admin of the contract can call the function.
+    modifier onlyAdmin() {
         require(msg.sender == admin, "You are not the admin.");
         _;
     }
 
-    // Constructor:
-    constructor(string memory _candidate1, string memory _candidate2){
+    constructor (string memory _candidate1, string memory _candidate2) {
         admin = msg.sender;
         isActive = true;
         candidates[0] = Candidate({
@@ -40,15 +35,13 @@ contract Voting {
         });
     }
 
-    // Functions:
-
-    function vote (uint _candidateToVote) public returns(bool){
+    function vote (uint _candidateToVote) public returns (bool) {
         require(isActive, "Voting is closed.");
-        Voter storage sender =  voters[msg.sender];
-        require(sender.canVote,"You cannot vote.");
-        require(!sender.voted,"You cannot vote.");
+        Voter storage sender = voters[msg.sender];
+        require(sender.canVote,"Yo cannot vote.");
+        require(!sender.voted,"You already voted.");
         require(_candidateToVote < 2, "Invalid candidate.");
-        candidates[_candidateToVote].voteCount ++;
+        candidates[_candidateToVote].voteCount++;
         sender.voted = true;
         return true;
     }
@@ -60,5 +53,14 @@ contract Voting {
 
     function endVoteContract() public onlyAdmin {
         isActive = false;
+    }
+
+    function getWinningName() public view  returns (string memory) {
+        require(!isActive, "Voting is open.");
+        if (candidates[0].voteCount > candidates[1].voteCount) {
+            return candidates[0].name;
+        } else {
+            return candidates[1].name;
+        }
     }
 }
