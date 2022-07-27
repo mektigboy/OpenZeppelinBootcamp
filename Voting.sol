@@ -38,7 +38,7 @@ contract Voting {
     function vote (uint _candidateToVote) public returns (bool) {
         require(isActive, "Voting is closed.");
         Voter storage sender = voters[msg.sender];
-        require(sender.canVote,"Yo cannot vote.");
+        require(sender.canVote,"You cannot vote.");
         require(!sender.voted,"You already voted.");
         require(_candidateToVote < 2, "Invalid candidate.");
         candidates[_candidateToVote].voteCount++;
